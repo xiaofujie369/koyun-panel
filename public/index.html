@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>KOYUN Panel</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body class="container py-4">
+  <h1>Cloudflare Tunnels</h1>
+  <table class="table table-bordered" id="tunnel-table">
+    <thead>
+      <tr><th>ID</th><th>Name</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    function loadTunnels() {
+      $.get('/api/tunnels', res => {
+        let rows = res.result.map(tunnel => `
+          <tr>
+            <td>${tunnel.id}</td>
+            <td>${tunnel.name}</td>
+            <td>${tunnel.status}</td>
+            <td>
+              <button onclick="control('${tunnel.id}', 'delete')" class="btn btn-danger">Delete</button>
+            </td>
+          </tr>
+        `);
+        $('#tunnel-table tbody').html(rows.join(''));
+      });
+    }
+
+    function control(id, action) {
+      $.post(`/api/tunnel/${id}/${action}`, {}, res => {
+        alert('Tunnel updated');
+        loadTunnels();
+      });
+    }
+
+    loadTunnels();
+  </script>
+</body>
+</html>
